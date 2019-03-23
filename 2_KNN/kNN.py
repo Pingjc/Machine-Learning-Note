@@ -58,5 +58,49 @@ def show(datingDataMat):
     ax.scatter(datingDataMat[:,1],datingDataMat[:,2],15.0*array(datingLabels),15.0*array(datingLabels))
     plt.show()
     
+def autoNorm(dataSet):
+    #calculate max and min value in column, calculate ranges of columns
+    minVals=dataSet.min(0)
+    maxVals=dataSet.max(0)
+    ranges=maxVals-minVals
+    #prepare the output
+    normDataSet=zeros(shape(dataSet))
+    m=dataSet.shape[0]
+    #normalize the matrix
+    normDataSet=dataSet-tile(minVals,(m,1))
+    normDataSet=normDataSet/tile(ranges,(m,1))
+    return normDataSet,ranges,minVals
     
+def datingClassTest():
+    #set test set range
+    hoRatio=0.10
+    #get data set from file
+    datingDataMat,datingLabels=file2matrix('datingTestSet2.txt')
+    #normalize
+    normMat,ranges,minVals=autoNorm(datingDataMat)
+    m=normMat.shape[0]
+    numTestVecs=int(m*hoRatio)
+    errorCount=0.0
+    #test set range is [0~numTestVect], tring set range is [numTestVect~m]
+    for i in range(numTestVecs):
+        classifierResult=classify0(normMat[i,:],normMat[numTestVecs:m,:],datingLabels[numTestVecs:m],3)
+        print("The classifier came back with: %d, the real answer is: %d" %(classifierResult,datingLabels[i]))
+        if (classifierResult!=datingLabels[i]):
+            errorCount+=1.0
+    print("The total error rate is: %f" %(errorCount/float(numTestVecs)))
+    
+def classifyPerson():
+    #get input data
+    resultList=['not at all','in small doses','in large doses']
+    percentTats=float (input('Percentage of time spend playing video games?'))
+    ffMiles=float(input('Frequent flier miles earned per year?'))
+    iceCream=float(input('Liters of ice cream consumed per year?'))
+    #get data set from file
+    datingDataMet,datingLabels=file2matrix('datingTestSet2.txt')
+    #normalize data set
+    normMat,ranges,minVals=autoNorm(datingDataMat)
+    #generate input data array and test input
+    inArr=array([ffMiles,percentTats,iceCream])
+    classifierResult=classify0((inArr-minVals)/ranges,normMat,datingLabels,3)
+    print('You will probably like this person: ',resultList[classifierResult-1])
     
