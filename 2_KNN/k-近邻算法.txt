@@ -38,6 +38,12 @@ datingClassTest()
 classifyPerson()
 和datingClassTest()作用相似，区别在于从标准输入中获取参数并进行分类
 
+img2vector()
+从文件中获取像素数据，同时将以矩阵形式存储的数据转换成向量
+
+handwritingClassTest()
+将手写字体识别相关部分封装起来使用的示例
+
 复杂度分析
 训练集大小n
 计算距离O(n)
